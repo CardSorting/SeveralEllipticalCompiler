@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Customization Process</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .template-item:hover {
+            background-color: #f3f4f6;
+        }
+        .star-icon {
+            cursor: pointer;
+        }
+        .active-tab {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .inactive-tab {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .scrollable {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .scrollable-container {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        .tab-container {
+            height: calc(100vh - 128px); /* Adjust based on header and footer height */
+            overflow-y: auto;
+        }
+        .pagination-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        .pagination-buttons svg {
+            cursor: pointer;
+        }
+        .divider {
+            border-bottom: 1px solid #e5e7eb;
+            margin: 2rem 0;
+        }
+        .spacer {
+            margin-bottom: 2rem;
+        }
+        .template-selected {
+            background-color: white;
+        }
+        .template-not-selected {
+            background-color: #f3f4f6;
+        }
+        .pagination-arrow {
+            display: flex;
+            align-items: center;
+        }
+        .header {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header svg {
+            cursor: pointer;
+        }
+        .header .title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .header .right-icons {
+            display: flex;
+            align-items: center;
+        }
+        .header .right-icons img {
+            border-radius: 50%;
+            margin-left: 1rem;
+        }
+        .header .right-icons button {
+            background-color: white;
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-left: 1rem;
+        }
+        .canvas-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <!-- Step 2: Template Selection with Tabs -->
+    <div id="step2" class="bg-white p-8 rounded-lg shadow-md max-w-7xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Choose a Template</h2>
+            <div>
+                <button id="templatesTab" class="px-4 py-2 active-tab rounded-l">Templates</button>
+                <button id="occasionTab" class="px-4 py-2 inactive-tab">Occasion</button>
+                <button id="favoritesTab" class="px-4 py-2 inactive-tab rounded-r">Favorites</button>
+            </div>
+        </div>
+        <div class="flex">
+            <!-- Sidebar -->
+            <div class="w-1/4 bg-gray-50 p-4 rounded-lg shadow-inner tab-container">
+                <h3 class="text-xl font-semibold mb-4">Categories</h3>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Occasion</h3>
+                    <ul class="space-y-2">
+                        <li><input type="checkbox" id="occasion1" class="mr-2">Birthday</li>
+                        <li><input type="checkbox" id="occasion2" class="mr-2">Wedding</li>
+                        <li><input type="checkbox" id="occasion3" class="mr-2">Anniversary</li>
+                        <li><input type="checkbox" id="occasion4" class="mr-2">Thank You</li>
+                        <li><input type="checkbox" id="occasion5" class="mr-2">Holiday</li>
+                        <li><input type="checkbox" id="occasion6" class="mr-2">Sympathy</li>
+                        <li><input type="checkbox" id="occasion7" class="mr-2">Other</li>
+                    </ul>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Format (Size)</h3>
+                    <ul class="space-y-2">
+                        <li><input type="checkbox" id="size1" class="mr-2">5" x 7"</li>
+                        <li><input type="checkbox" id="size2" class="mr-2">4" x 6"</li>
+                        <li><input type="checkbox" id="size3" class="mr-2">3.5" x 5"</li>
+                        <li><input type="checkbox" id="size4" class="mr-2">2.5" x 7"</li>
+                        <li><input type="checkbox" id="size5" class="mr-2">5" x 5"</li>
+                        <li><input type="checkbox" id="size6" class="mr-2">4.25" x 5.5"</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Orientation</h3>
+                    <ul class="space-y-2">
+                        <li><input type="checkbox" id="orientation1" class="mr-2">Portrait</li>
+                        <li><input type="checkbox" id="orientation2" class="mr-2">Landscape</li>
+                    </ul>
+                </div>
+                <div class="mt-6">
+                    <button class="bg-purple-500 text-white py-2 px-4 rounded w-full hover:bg-purple-600">Apply</button>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="w-3/4 bg-white p-4 ml-4 rounded-lg shadow-inner tab-container">
+                <div id="templateContainer" class="grid grid-cols-3 gap-4">
+                    <!-- Template items will be appended here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Canva-like Editor with Tabs -->
+    <div id="step3" class="hidden flex max-w-7xl w-full">
+        <div class="w-full">
+            <!-- Header -->
+            <div class="header">
+                <div class="title">Custom Card Editor</div>
+                <div class="right-icons">
+                    <button class="bg-white text-blue-500 py-2 px-4 rounded">Save</button>
+                    <img src="https://via.placeholder.com/40" alt="User Profile">
+                </div>
+            </div>
+            <!-- Editor -->
+            <div class="flex">
+                <!-- Sidebar Tabs -->
+                <div class="w-1/4 bg-gray-50 p-4 rounded-lg shadow-inner tab-container">
+                    <div class="mb-4">
+                        <button id="editorTemplatesTab" class="w-full py-2 px-4 active-tab">Templates</button>
+                        <button id="editorOccasionTab" class="w-full py-2 px-4 inactive-tab">Occasion</button>
+                        <button id="editorFavoritesTab" class="w-full py-2 px-4 inactive-tab">Favorites</button>
+                    </div>
+                    <!-- Tabs Content -->
+                    <div id="editorTemplateContainer" class="template-grid">
+                        <!-- Template items will be appended here dynamically -->
+                    </div>
+                    <div id="editorOccasionContainer" class="hidden">
+                        <div id="occasionItems" class="scrollable-container">
+                            <!-- Occasion items will be appended here dynamically -->
+                        </div>
+                    </div>
+                    <div id="editorFavoritesContainer" class="hidden">
+                        <div id="favoriteItems" class="template-grid">
+                            <!-- Favorite items will be appended here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Canvas -->
+                <div class="w-3/4 bg-white p-8 ml-4 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Edit Your Card</h2>
+                    <div id="editorCanvas" class="border p-4 rounded h-96 bg-gray-100 flex items-center justify-center">
+                        <div id="templateContent" class="w-full h-full flex items-center justify-center text-center"></div>
+                    </div>
+                    <div class="flex justify-between mt-6">
+                        <button id="backToStep2" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">Back</button>
+                        <button id="nextToStep4" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Envelope Selection -->
+    <div id="step4" class="hidden bg-white p-8 rounded-lg shadow-md max-w-2xl w-full">
+        <h2 class="text-2xl font-bold mb-6 text-center">Choose Your Envelope Option</h2>
+
+        <!-- Envelope Options -->
+        <div class="mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border p-4 rounded hover:shadow-lg cursor-pointer">
+                    <img src="https://via.placeholder.com/150" alt="Free White Envelopes" class="w-full h-auto mb-2">
+                    <p class="text-center">Free White Envelopes</p>
+                    <p class="text-center text-sm text-gray-500">Standard white envelopes included at no extra cost.</p>
+                </div>
+                <div class="border p-4 rounded hover:shadow-lg cursor-pointer">
+                    <img src="https://via.placeholder.com/150" alt="Addressed Envelopes" class="w-full h-auto mb-2">
+                    <p class="text-center">Addressed Envelopes</p>
+                    <p class="text-center text-sm text-gray-500">Custom envelopes with printed addresses for a professional touch.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Addressed Envelopes Details -->
+        <div id="addressedEnvelopesDetails" class="hidden mb-6">
+            <h3 class="text-xl font-semibold mb-2">Addressed Envelopes Details</h3>
+            <p class="text-sm mb-4">Please provide the addresses using one of the following methods:</p>
+            <div class="mb-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Upload Address List</label>
+                <input type="file" class="w-full text-gray-700 bg-gray-200 rounded p-2 cursor-pointer">
+                <p class="text-xs text-gray-500 mt-1">Upload a file with the addresses you have (CSV, Excel).</p>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Manual Entry</label>
+                <textarea class="w-full text-gray-700 bg-gray-200 rounded p-2" placeholder="Enter addresses manually"></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Partial List Submission</label>
+                <p class="text-xs text-gray-500">Submit a partial list now and complete it later. You can save your progress and receive a link via email to continue later.</p>
+                <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2">Save Progress</button>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Shipping Choices</label>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="border p-4 rounded hover:shadow-lg cursor-pointer">
+                        <p class="text-center">Direct Shipping</p>
+                        <p class="text-center text-sm text-gray-500">Ship cards directly to recipients as addresses are provided.</p>
+                    </div>
+                    <div class="border p-4 rounded hover:shadow-lg cursor-pointer">
+                        <p class="text-center">Ship to Customer</p>
+                        <p class="text-center text-sm text-gray-500">Ship the cards to the customer with the required number of printed designed envelopes, including their return address applied.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between">
+            <button id="backToStep3" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">Back</button>
+            <button id="finishButton" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Finish</button>
+        </div>
+    </div>
+
+    <!-- JavaScript to Handle Navigation, Tabs, and Favoriting -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const templatesTab = document.getElementById('templatesTab');
+            const occasionTab = document.getElementById('occasionTab');
+            const favoritesTab = document.getElementById('favoritesTab');
+            const templateContainer = document.getElementById('templateContainer');
+            const backToStep2 = document.getElementById('backToStep2');
+            const nextToStep4 = document.getElementById('nextToStep4');
+            const backToStep3 = document.getElementById('backToStep3');
+            const finishButton = document.getElementById('finishButton');
+            const editorTemplatesTab = document.getElementById('editorTemplatesTab');
+            const editorOccasionTab = document.getElementById('editorOccasionTab');
+            const editorFavoritesTab = document.getElementById('editorFavoritesTab');
+            const editorTemplateContainer = document.getElementById('editorTemplateContainer');
+            const editorOccasionContainer = document.getElementById('editorOccasionContainer');
+            const editorFavoritesContainer = document.getElementById('editorFavoritesContainer');
+            const editorCanvas = document.getElementById('editorCanvas');
+            const templateContent = document.getElementById('templateContent');
+
+            const steps = ['step2', 'step3', 'step4'];
+            let selectedTemplate = null;
+
+            const templates = [
+                { id: 1, name: 'Thank You 1', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 2, name: 'Thank You 2', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 3, name: 'Thank You 3', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 4, name: 'Thank You 4', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 5, name: 'Thank You 5', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 6, name: 'Thank You 6', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Thank You' },
+                { id: 7, name: 'Birthday 1', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Birthday' },
+                { id: 8, name: 'Birthday 2', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Birthday' },
+                { id: 9, name: 'Wedding 1', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Wedding' },
+                { id: 10, name: 'Wedding 2', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Wedding' },
+                { id: 11, name: 'Anniversary 1', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Anniversary' },
+                { id: 12, name: 'Anniversary 2', src: 'https://via.placeholder.com/150', favorited: false, occasion: 'Anniversary' },
+            ];
+
+            function showStep(step) {
+                steps.forEach(s => {
+                    document.getElementById(s).classList.add('hidden');
+                });
+                document.getElementById(step).classList.remove('hidden');
+            }
+
+            function displayTemplates(templates, container) {
+                container.innerHTML = '';
+                templates.forEach(template => {
+                    const templateDiv = document.createElement('div');
+                    templateDiv.classList.add('border', 'p-4', 'rounded', 'hover:shadow-lg', 'cursor-pointer', 'template-item');
+                    templateDiv.classList.add(template.favorited ? 'template-selected' : 'template-not-selected');
+                    templateDiv.innerHTML = `
+                        <img src="${template.src}" alt="${template.name}" class="w-full h-auto mb-2">
+                        <div class="flex justify-end">
+                            <svg class="star-icon w-6 h-6 ${template.favorited ? 'text-yellow-500' : 'text-gray-400'}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-id="${template.id}">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.184 3.643a1 1 0 00.95.69h3.882c.969 0 1.371 1.24.588 1.81l-3.14 2.28a1 1 0 00-.364 1.118l1.184 3.642c.3.921-.755 1.688-1.54 1.118l-3.14-2.28a1 1 0 00-1.175 0l-3.14 2.28c-.784.57-1.838-.197-1.539-1.118l1.183-3.642a1 1 0 00-.363-1.118l-3.141-2.28c-.782-.57-.38-1.81.588-1.81h3.882a1 1 0 00.95-.69l1.183-3.643z"/>
+                            </svg>
+                        </div>
+                    `;
+                    templateDiv.addEventListener('click', () => {
+                        selectedTemplate = template;
+                        showStep('step3');
+                        applyTemplateToCanvas(template);
+                    });
+                    container.appendChild(templateDiv);
+                });
+                addStarClickListeners(container);
+            }
+
+            function applyTemplateToCanvas(template) {
+                templateContent.innerHTML = `<img src="${template.src}" alt="${template.name}" class="canvas-image">`;
+            }
+
+            function displayOccasions(templates, container) {
+                container.innerHTML = '';
+                const occasions = [...new Set(templates.map(template => template.occasion))];
+                occasions.forEach(occasion => {
+                    const occasionHeader = document.createElement('h3');
+                    occasionHeader.classList.add('text-xl', 'font-bold', 'mb-4', 'spacer');
+                    occasionHeader.textContent = occasion;
+                    container.appendChild(occasionHeader);
+
+                    const occasionContainer = document.createElement('div');
+                    occasionContainer.classList.add('grid', 'grid-cols-2', 'gap-4', 'mb-8', 'divider');
+                    templates.filter(template => template.occasion === occasion).forEach(template => {
+                        const templateDiv = document.createElement('div');
+                        templateDiv.classList.add('border', 'p-4', 'rounded', 'hover:shadow-lg', 'cursor-pointer', 'template-item');
+                        templateDiv.classList.add(template.favorited ? 'template-selected' : 'template-not-selected');
+                        templateDiv.innerHTML = `
+                            <img src="${template.src}" alt="${template.name}" class="w-full h-auto mb-2">
+                        `;
+                        occasionContainer.appendChild(templateDiv);
+                    });
+                    container.appendChild(occasionContainer);
+
+                    // Pagination buttons
+                    const paginationContainer = document.createElement('div');
+                    paginationContainer.classList.add('pagination-buttons', 'pagination-arrow');
+                    paginationContainer.innerHTML = `
+                        <svg class="prev-page w-6 h-6 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <svg class="next-page w-6 h-6 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    `;
+                    container.appendChild(paginationContainer);
+
+                    const itemsPerPage = 2;
+                    let currentPage = 0;
+
+                    const paginate = () => {
+                        const start = currentPage * itemsPerPage;
+                        const end = start + itemsPerPage;
+                        const items = occasionContainer.querySelectorAll('.template-item');
+                        items.forEach((item, index) => {
+                            item.style.display = (index >= start && index < end) ? 'block' : 'none';
+                        });
+                    };
+
+                    paginate();
+
+                    paginationContainer.querySelector('.prev-page').addEventListener('click', () => {
+                        if (currentPage > 0) {
+                            currentPage--;
+                            paginate();
+                        }
+                    });
+
+                    paginationContainer.querySelector('.next-page').addEventListener('click', () => {
+                        if ((currentPage + 1) * itemsPerPage < occasionContainer.querySelectorAll('.template-item').length) {
+                            currentPage++;
+                            paginate();
+                        }
+                    });
+                });
+            }
+
+            function addStarClickListeners(container) {
+                container.querySelectorAll('.star-icon').forEach(star => {
+                    star.addEventListener('click', function(event) {
+                        const templateId = parseInt(event.currentTarget.getAttribute('data-id'));
+                        const template = templates.find(t => t.id === templateId);
+                        template.favorited = !template.favorited;
+                        displayTemplates(templates.filter(t => !editorFavoritesTab.classList.contains('active-tab') || t.favorited), container);
+                    });
+                });
+            }
+
+            function switchTab(tab, container, displayFunction) {
+                const tabs = [editorTemplatesTab, editorOccasionTab, editorFavoritesTab];
+                tabs.forEach(t => t.classList.remove('active-tab'));
+                tabs.forEach(t => t.classList.add('inactive-tab'));
+                tab.classList.add('active-tab');
+                tab.classList.remove('inactive-tab');
+                container.classList.remove('hidden');
+                if (tab !== editorOccasionTab) {
+                    editorOccasionContainer.classList.add('hidden');
+                }
+                if (tab !== editorTemplateContainer) {
+                    editorTemplateContainer.classList.add('hidden');
+                }
+                if (tab !== editorFavoritesTab) {
+                    editorFavoritesContainer.classList.add('hidden');
+                }
+                displayFunction();
+            }
+
+            displayTemplates(templates, templateContainer); // Load templates on Step 2
+
+            backToStep2.addEventListener('click', function() {
+                showStep('step2');
+            });
+
+            nextToStep4.addEventListener('click', function() {
+                showStep('step4');
+            });
+
+            backToStep3.addEventListener('click', function() {
+                showStep('step3');
+            });
+
+            finishButton.addEventListener('click', function() {
+                alert('Order Completed');
+            });
+
+            templatesTab.addEventListener('click', function() {
+                switchTab(templatesTab, editorTemplateContainer, () => displayTemplates(templates, editorTemplateContainer));
+            });
+
+            occasionTab.addEventListener('click', function() {
+                switchTab(occasionTab, editorOccasionContainer, () => displayOccasions(templates, editorOccasionContainer));
+            });
+
+            favoritesTab.addEventListener('click', function() {
+                switchTab(favoritesTab, editorFavoritesContainer, () => displayTemplates(templates.filter(t => t.favorited), editorFavoritesContainer));
+            });
+
+            editorTemplatesTab.addEventListener('click', function() {
+                switchTab(editorTemplatesTab, editorTemplateContainer, () => displayTemplates(templates, editorTemplateContainer));
+            });
+
+            editorOccasionTab.addEventListener('click', function() {
+                switchTab(editorOccasionTab, editorOccasionContainer, () => displayOccasions(templates, editorOccasionContainer));
+            });
+
+            editorFavoritesTab.addEventListener('click', function() {
+                switchTab(editorFavoritesTab, editorFavoritesContainer, () => displayTemplates(templates.filter(t => t.favorited), editorFavoritesContainer));
+            });
+        });
+    </script>
+</body>
+</html>
